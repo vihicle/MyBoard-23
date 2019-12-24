@@ -11,7 +11,7 @@ public class AppController {
 	@GetMapping("/")
 	public String index(Model model) {
 		model.addAttribute("datetime", new Date());
-		model.addAttribute("username", "Palewitch");
+		model.addAttribute("username", "JinSeongPark");
 	
 		return "index";
 	}

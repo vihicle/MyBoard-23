@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="fragments/config :: configFragment"></head>
+	<body class="hold-transition skin-blue layout-top-nav">
+		<div class="wrapper">
+			<header th:replace="fragments/header :: naviFragment"></header>
+			
+			<div class="content-wrapper">
+				<div class="container">
+					<section class="content-header">
+						<h1>General Form Elements <small>Top Navigation</small></h1>
+						<ol class="breadcrumb">
+							<li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+							<li><a href="#">Board</a></li>
+							<li class="active">Board Modify Page</li>
+						</ol>
+					</section>
+					
+					<section class="content">
+						<div class="box">
+							<div class="box-header with-border">
+								<h3 class="box-title">Board Modify Page</h3>
+							</div>
+							<div class="box-body" th:object="${board}">
+								<form role="form" action="/board/modify" method="post">
+									<div class="form-group">
+										<label>Board #</label>
+										<input name="bno"
+												class="form-control"
+												th:value="*{bno}" readonly="readonly">
+									</div>
+									
+									<div class="form-group">
+										<label>Title</label>
+										<input name="title"
+												class="form-control"
+												th:value="*{title}">
+									</div>
+									
+									<div class="form-group">
+										<label>Content</label>
+										<textArea name="content" rows="3"
+												class="form-control"
+												th:text="*{content}">
+										</textArea>
+									</div>
+									
+									<div class="form-group">
+										<label>Writer</label>
+										<input name="writer"
+												class="form-control"
+												th:value="*{writer}" readonly="readonly">
+									</div>
+									
+									<div class="box-footer">
+										<button type="submit" class="btn btn-success"
+												data-oper="modify">
+											MODIFY
+										</button>
+										<button type="submit" class="btn btn-danger"
+												data-oper="remove">
+											REMOVE
+										</button>
+										<button type="submit" class="btn btn-info"
+												data-oper="list">
+											LIST
+										</button>
+									</div>
+										<input type="hidden" 
+												name="pageNum" th:value="${cri.pageNum}">
+										<input type="hidden" 
+												name="amount" th:value="${cri.amount}">
+										<input type="hidden" name="type" 
+												th:value="${cri.type}">
+										<input type="hidden" name="keyword" 
+												th:value="${cri.keyword}">
+								</form>
+							</div>
+							
+						</div>
+					</section>
+				</div>
+			</div>
+			
+			<footer th:replace="fragments/footer :: footerFragment"></footer>
+		</div>
+		
+		<footer th:replace="fragments/footer :: scriptsFragment"></footer>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				var formObj = $("form");
+				
+				$('button').on("click", function(e){
+					e.preventDefault();
+					var operation = $(this).data("oper");
+					console.log(operation);
+					
+					if(operation == 'remove'){
+						formObj.attr("action", "/board/remove");
+					}else if(operation == 'list'){
+						formObj.attr("action", "/board/list");
+						formObj.attr("method", "get");
+						var pageNumTag = $("input[name='pageNum']").clone();
+						var amountTag = $("input[name='amount']").clone();
+						var keywordTag = $("input[name='keyword']").clone();
+						var typeTag = $("input[name='type']").clone();
+						
+						formObj.empty();
+						formObj.append(pageNumTag);
+						formObj.append(amountTag);
+						formObj.append(keywordTag);
+						formObj.append(typeTag);
+					}
+					formObj.submit();
+				});
+			});
+		</script>
+	</body>
+</html>

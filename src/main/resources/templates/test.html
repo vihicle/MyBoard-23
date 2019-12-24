@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="fragments/config :: configFragment">
+			<meta charset="UTF-8">
+			<title>Insert Title here</title>
+			
+	</head>
+	<style>
+		#modDiv {
+			width : 300px;
+			height : 100px;
+			background-color : gray;
+			position : absolute;
+			top : 50%;
+			left : 50%;
+			margin-top : -50px;
+			margin-left : -150px;
+			padding : 10px;
+			z-index : 1000;
+			}
+	</style>
+	<body class="hold-transition skin-blue layout-top-nav">
+		<div class="wrapper">	
+			<header th:replace="fragments/header :: naviFragment"></header>
+			
+				<div class="content-wrapper">
+					<div class="container">
+						<section class="content">
+							<div class="box">
+								<div class="box-header with-border">
+									<h2>Ajax Test Page</h2>
+									<div>
+										<div>
+											REPLYER <input type="text" name="replyer" id="newReplyWriter">
+										</div>
+										<div>
+											REPLY TEXT <input type="text" name="reply" id="newReplyText">
+										</div>
+										<button class="btn btn-default" id="replyAddBtn">ADD REPLY</button>
+										
+											<ul class="btn btn-default">
+												<li class="active"><a class="btn-default" href="/board/list" role="button">LIST PAGE</a></li>
+											</ul>
+									</div>
+									<ul id="replies">
+									</ul>
+									<ul class="pagination">
+									
+									</ul>
+								</div>
+							</div>
+						</section>
+					</div>
+				</div>
+			</div>
+			
+			<div id ="modDiv" style="display : none;">
+				<div class="modal-title" style="color:white;"></div>
+				<div>
+					<input type="text" id="replytext" style="width:250px;">
+				</div>
+				<div>
+					<button type="button" id="replyModBtn">Modify</button>
+					<button type="button" id="replyDelBtn">Delete</button>
+					<button type="button" id="closeBtn">Close</button>
+					
+				</div>
+			</div>
+			<footer th:replace="fragments/footer :: scriptsFragment"></footer>
+		<script>
+			var bno=9;
+			$(document).ready(function(){
+				getPageList(1);
+			});
+				$.getJSON("/replies/pages/"+bno+"/1", function(data){
+					console.log(data.length);		
+					
+					var str="";
+					$(data).each(function(){
+						str += "<li data-rno='" + this.rno + "' class='replyLi'>"
+									+this.rno + ":" + this.reply + "</li>";
+					});
+						
+					$("#replies").html(str);
+				});
+				
+				$(".pagination").on("click", "li a", function(e){
+					e.preventDefault();
+					var replyPage = $(this).attr("href");
+					getPageList(replyPage);
+				});
+			
+			$("#replyAddBtn").on("click", function(){
+				var replyer = $("#newReplyWriter").val();
+				var replytext = $("#newReplyText").val();
+					
+				$.ajax({
+					type : 'post',
+					url : 'replies/new',
+					headers : {
+						"Content-Type" : "application/json",
+						"X-HTTP-Method-Override" : "POST"
+					},
+					contentType : "application/json; charset=utf-8",
+					dataType : 'text',
+					data : JSON.stringify({
+						bno : bno,
+						replyer : replyer,
+						reply : replytext
+					}),
+					success : function(result){
+						if(result == 'success'){
+							alert("등록되었습니다.");
+							getAllList();
+						}
+					}
+				});
+			});
+
+		
+			$("#replies").on("click", ".replyLi button", function(e){
+				var reply = $(this).parent();
+				var rno = reply.attr("data-rno");
+				var replytext = reply.text();
+				
+				$(".modal-title").html(rno);
+				$("#replytext").val(replytext);
+				$("#modDiv").show("slow");
+			});
+			
+			$("#replyModBtn").on("click", function(){
+				var rno = $(".modal-title").html();
+				var replytext = $("#replytext").val();
+				
+				$.ajax({
+					type : 'put',
+					url : 'replies/'+ rno,
+					headers : {
+						"Content-Type" : "application/json",
+						"X-HTTP-Method-Override" : "PUT" },
+					contentType : "application/json; charset=utf-8",
+					dataType : 'text',
+					data : JSON.stringify({
+						rno : rno,
+						reply : replytext
+					}),
+					success : function(result){
+						if(result == 'success'){
+							alert("수정되었습니다.");
+							
+							getAllList();
+						}
+					}
+				});
+			});
+			
+			$("#replyDelBtn").on("click", function(){
+				var rno = $(".modal-title").html();
+				var replytext = $("#replytext").val();
+				
+				$.ajax({
+					type : 'delete',
+					url : 'replies/'+ rno,
+					headers : {
+						"Content-Type" : "application/json",
+						"X-HTTP-Method-Override" : "DELETE" },
+					contentType : "application/json; charset=utf-8",
+					dataType : 'text',
+					data : JSON.stringify({
+						rno : rno,
+						reply : replytext
+					}),
+					success : function(result){
+						if(result == 'success'){
+							alert("삭제되었습니다.");
+							$("#modDiv").hide("slow");
+							getAllList();
+						}
+					}
+				});
+			});
+			
+			$("#closeBtn").on("click", function(){
+				$("#modDiv").hide("slow");
+			});
+
+			function getAllList(){
+				$.getJSON("/replies/pages/"+bno+"/1", function(data){
+					console.log(data.length);		
+					
+					var str="";
+					$(data).each(function(){
+						str += "<li data-rno='" + this.rno + "' class='replyLi'>"
+									+this.rno + ":" + this.reply 
+									+ "<button>" + 'MOD' + "</button></li>";
+					});
+						
+					$("#replies").html(str);
+				});
+			}
+			
+			function getPageList(page){
+				$.getJSON("/replies/pages/"+bno+"/"+page, function(data){
+					console.log(data.list.length);		
+					
+					var str="";
+					
+					$(data.list).each(function(){
+						str += "<li data-rno='" + this.rno + "' class='replyLi'>"
+									+this.rno + ":" + this.reply + "<button>" + 'MOD' + "</button></li>";
+					});
+					$("#replies").html(str);
+					printPaging(data.pageMaker);
+			});
+			}
+			
+			function printPaging(pageMaker) {
+				var str="";
+				
+				if(pageMaker.prev){
+					str+="<li><a href='"+(pageMaker.startPage-1)+"'> << </a></li>";
+				}
+				for(var i=pageMaker.startPage, len=pageMaker.endPage; i<=len; i++){
+					var strClass = pageMaker.cri.pageNum == i ? "class='active'" : "";
+					str +="<li" +strClass +"><a href'" + i + "'>" + i + "</a><li>";
+				}
+				if(pageMaker.prev){
+					str+="<li><a href='"+(pageMaker.startPage-1)+"'> << </a></li>";
+				}
+				$(".pagination").html(str);
+			}
+			
+
+
+			
+		</script>
+	</body>
+</html>

@@ -1,128 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-	<head>
-		<meta charset="UTF-8">
-		<title>Simple template for Bootstrap</title>
-	
-		<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
-		<link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.min.css">
-		<link rel="stylesheet" href="/bower_components/Ionicons/css/ionicons.min.css">
-		<link rel="stylesheet" href="/dist/css/AdminLTE.min.css">
-		<link rel="stylesheet" href="/dist/css/skins/_all-skins.min.css">
-	</head>
+	<head th:replace="fragments/config :: configFragment"></head>
 	<body class="hold-transition skin-blue layout-top-nav">
 		<div class="wrapper">
-			<header class="main-header">
-				<div class="navbar navbar-static-top">
-					<div class="container">
-						<div class="navbar-header">
-							<a href="#" class="navbar-brand"><b>Digital Contents</b></a>
-							<button type="button" class="navbar-toggle collapsed"
-							        data-toggle="collapse" data-target="#navbar-collapse">
-								<i class="fa fa-bars"></i>
-							</button>
-						</div>
-						
-						<div class="navbar-collapse collapse pull-left" id="navbar-collapse">
-							<ul class="nav navbar-nav">
-								<li class="active"><a href="#">Link</a></li>
-								<li><a href="#">Link</a></li>
-								<li class="dropdown">
-									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-										Dropdown <span class="caret"></span>
-									</a>
-									<ul class="dropdown-menu" role="menu">
-										<li><a href="#">Action</a></li>
-										<li><a href="#">Another action</a></li>
-										<li><a href="#">Something else here</a></li>
-										<li class="divider"></li>
-										<li><a href="#">Separated Link</a></li>
-									</ul>
-								</li>
-							</ul>
-							<form class="navbar-form navbar-left" role="search">
-								<div class="form-group">
-									<input type="text" class="form-control" id="navbar-search-input" placeholder="Search">
-								</div>
-							</form>
-						</div>
-					
-						<div class="navbar-custom-menu">
-							<ul class="nav navbar-nav">
-								<li class="dropdown messages-menu">
-									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-										<i class="fa fa-envlope-o"></i>
-										<span class="label label-success">4</span>
-									</a>
-									
-									<ul class="dropdown-menu">
-										<li class="header">You have 4 messages</li>
-										<li>
-											<ul class="menu">
-												<li>
-													<a href="#">
-														<div class="pull-left">
-															<img src="/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-														</div>
-														<h4>
-															Support Team
-															<small><i class="fa-fa-clock-o"></i>5 mins</small>
-														</h4>
-														<p>Why not buy a new awesome theme?</p>
-													</a>
-												</li>
-											</ul>
-										</li>
-										<li class="footer"><a href="#">See All Messages</a></li>
-									</ul>
-								</li>
-							
-								<li class="dropdown notifications-menu">
-									<a href="#">
-										<i class="fa fa-bell-o"></i><span class="label label-warning">10</span>
-									</a>
-								</li>
-								
-								<li class="dropdown tasks-menu">
-									<a href="#">
-										<i class="fa fa-flag-o"></i><span class="label label-danger">9</span>
-									</a>
-								</li>
-								
-								<li class="dropdown user user-menu">
-									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-										<img src="/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-										<span class="hidden-xs">Alexander Pierce</span>
-									</a>
-									<ul class="dropdown-menu">
-										<li class="user-header">
-											<img src="/idst/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-											<p>
-												Alexander Pierce - Web Developer
-												<small>Member since Nov. 2012</small>
-											</p>
-										</li>
-										<li class="user footer">
-											<div class="pull-left">
-												<a href="#" class="btn btn-default btn-flat">Profile</a>
-											</div>
-											<div class="pull-right">
-												<a href="#" class="btn btn-default btn-falt">Sign out</a>
-											</div>
-										</li>
-									</ul>
-								</li>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</header>
-			
+			<header th:replace="fragments/header :: naviFragment"></header>
 			<div class="content-wrapper">
 				<div class="container">
 					<section class="content-header">
-						<h1>General Form Elements <small>Top Navigation</small></h1>
+						<h1>My Diary <small>Top Navigation</small></h1>
 						<ol class="breadcrumb">
 							<li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
 							<li><a href="#">Board</a></li>
@@ -134,8 +20,38 @@
 						<div class="box">
 							<div class="box-header with-border">
 								<h3 class="box-title">Board List Page</h3>
+								<button id="regBtn" type="button"
+										class="btn btn-default pull-right">
+									Register New Board		
+								</button>
 							</div>
+							
 							<div class="box-body">
+								<form id="searchForm" action="/board/list" method="get">
+									<select name="type">
+										<option th:value="''" th:selected="${pageMaker.cri.type==null?'true' : 'false'}"
+												th:text="'---'"></option>
+										<option th:value="'T'" th:selected="${pageMaker.cri.type=='T'?'true' : 'false'}"
+												th:text="'제목'"></option>
+										<option th:value="'C'" th:selected="${pageMaker.cri.type=='C'?'true' : 'false'}"
+												th:text="'내용'"></option>
+										<option th:value="'W'" th:selected="${pageMaker.cri.type=='W'?'true' : 'false'}"
+												th:text="'작성자'"></option>
+										<option th:value="'TC'" th:selected="${pageMaker.cri.type=='TC'?'true' : 'false'}"
+												th:text="'제목 or 내용'"></option>
+										<option th:value="'TW'" th:selected="${pageMaker.cri.type=='TW'?'true' : 'false'}"
+												th:text="'제목 or 작성자'"></option>
+										<option th:value="'TCW'" th:selected="${pageMaker.cri.type=='TCW'?'true' : 'false'}"
+												th:text="'제목 or 내용 or 작성자'"></option>								
+									</select>
+									<input type="text" name="keyword" th:value="${pageMaker.cri.keyword}">
+										<input type="hidden" name="pageNum" 
+											th:value="${pageMaker.cri.pageNum}">
+									<input type="hidden" name="amount" 
+											th:value="${pageMaker.cri.amount}">
+									<button class="btn btn-default">Search</button>
+								</form>
+								
 								<table class="table table-bordered table-hover">
 									<tr>
 										<th style="width:10px">#</th>
@@ -144,34 +60,125 @@
 									</tr>
 									<tr th:each="board:${list}">
 										<td th:text="${board.bno}"></td>
-										<td><a th:text="${board.title}"></a></td>
+										<td><a class="move" th:href="${board.bno}" 
+												th:text="${board.title}"></a></td>
 										<td th:text="${board.writer}"></td>
 										<td th:text="${#dates.format(board.regdate, 'yyyy-MM-dd HH:mm')}"></td>
 										<td th:text="${#dates.format(board.updateDate, 'yyyy-MM-dd HH:mm')}"></td>
 									</tr>
 								</table>
+								
+								<div class="text-center">
+									<ul class="pagination" th:if="${pageMaker.endPage gt 1}">
+										<li th:if="${pageMaker.prev}">
+											<a th:href="${pageMaker.startPage-1}">&laquo;</a>
+										</li>
+										<li th:classappend="${i eq pageMaker.getCri().getPageNum()} ? 'active'"
+											th:each="i : ${#numbers.sequence(
+													pageMaker.startPage, pageMaker.endPage, 1)}">
+											<a class="page-link" th:href="${i}" th:text="${i}"></a>
+										</li>
+										<li th:if="${pageMaker.next}">
+											<a th:href="${pageMaker.endPage+1}">&raquo;</a>
+										</li>
+									</ul>
+								</div>
+								
+								<div class="modal fade" id="resultModal">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<button type="button" class="close" 
+														data-dismiss="modal"
+														aria-hidden="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+												<h4 class="modal-title">Board Info</h4>
+											</div>
+												<div class="modal-body">
+													<p>처리가 완료되었습니다.</p>
+												</div>
+													<div class="modal-footer">
+														<button type="Button" class="btn btn=default"
+																data-dismiss="modal">Close</button>
+													</div>
+										</div>
+									</div>
+								</div>
+							
+								<form id="actionForm" action="/board/list" method="get">
+									<input type="hidden" name="pageNum" 
+											th:value="${pageMaker.cri.pageNum}">
+									<input type="hidden" name="amount" 
+											th:value="${pageMaker.cri.amount}">
+									<input type="hidden" name="type" 
+											th:value="${pageMaker.cri.type}">
+									<input type="hidden" name="keyword" 
+											th:value="${pageMaker.cri.keyword}">
+								</form>
 							</div>
 						</div>
 					</section>
 				</div>
 			</div>
 			
-			<footer class="main-footer">
-				<div class="container">
-					<div class="pull-right hidden-xs">
-						<b>Version</b> 1.0
-					</div>
-					<strong>Copyright &copy; 2019- <a href="#">Digital Contents</a>.</strong>
-					All right reserved.
-				</div>
-			</footer>
+			<footer th:replace="fragments/footer :: footerFragment"></footer>
 		</div>
-		
-		
 	
-		<script src="/bower_components/jquery/dist/jquery.min.js"></script>
-		<script src="/bower_components/jquery-ui/jquery-ui.min.js"></script>
-		<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-		<script src="/dist/js/adminlte.min.js"></script>
+		<footer th:replace="fragments/footer :: scriptsFragment"></footer>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				var result = "[[${result}]]";
+				checkModal(result);
+				
+				history.replaceState({}, null, null);
+				function checkModal(result){
+				if(result == '' || history.state){
+					return;
+				}
+				if(parseInt(result) > 0){
+					$(".modal-body").html("게시글 " + parseInt(result) + "번이 등록되었습니다.");
+					$("#resultModal").modal("show");
+				}
+			}
+			
+			$("#regBtn").on("click", function(){
+				self.location = "/board/register";
+			});
+			
+			var actionForm = $("#actionForm");
+			
+			$(".pagination li a").on("click", function(e){
+				e.preventDefault();
+				actionForm.find("input[name='pageNum']").val($(this).attr("href"));
+				actionForm.submit();
+			});
+			
+			$(".move").on("click",function(e){
+				e.preventDefault();
+				actionForm.append("<input type='hidden' name='bno' value='"+$(this).attr("href")+"'>");
+				actionForm.attr("action", "/board/read");
+				actionForm.submit();
+			});
+			
+			var searchForm = $("#searchForm");
+			
+			$("#searchForm button").on("click", function(e){
+				e.preventDefault();
+				if(!searchForm.find("option:selected").val()){
+					alert("검색 종류를 선택하세요.");
+					return false;
+				}
+				
+				if(!searchForm.find("input[name='keyword']").val()){
+					alert("키워드를 입력하세요.");
+					return false;
+				}
+				
+				searchForm.find("input[name='pageNum']").val("1");
+				searchForm.submit();
+			});
+		});
+		</script>
 	</body>
 </html>

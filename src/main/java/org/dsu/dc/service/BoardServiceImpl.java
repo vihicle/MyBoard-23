@@ -3,6 +3,7 @@ package org.dsu.dc.service;
 import java.util.List;
 
 import org.dsu.dc.domain.BoardVO;
+import org.dsu.dc.domain.Criteria;
 import org.dsu.dc.mapper.BoardMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,5 +44,23 @@ public class BoardServiceImpl implements BoardService {
 		log.info("[Board Remove...] bnp = {}", bno);
 		return mapper.delete(bno) == 1;
 	}
+	
+	@Override
+	public List<BoardVO> getList(Criteria cri){
+		log.info("[Board Get List with Criteria...] {}", cri);
+		return mapper.getListWithPaging(cri);
+	}
+	
+	@Override
+	public int getTotal(Criteria cri) {
+		log.info("[Board Get Total Count....]");
+		return mapper.getTotalCount(cri);
+	}
 
+	@Override
+	public int getTotal(Long bno) throws Exception {
+		log.info("[Board get Total...]");
+		return 0;
+	}
+	
 }

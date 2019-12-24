@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="fragments/config :: configFragment"></head>
+	<body class="hold-transition skin-blue layout-top-nav">
+		<div class="wrapper">
+			<header th:replace="fragments/header :: naviFragment"></header>
+			
+			<div class="content-wrapper">
+				<div class="container">
+					<section class="content-header">
+						<h1>My Diary <small>Top Navigation</small></h1>
+						<ol class="breadcrumb">
+							<li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+							<li><a href="#">Board</a></li>
+							<li class="active">Register a Diary</li>
+						</ol>
+					</section>
+					
+					<section class="content">
+						<div class="box">
+							<div class="box-header with-border">
+								<h3 class="box-title">Diary Register</h3>
+							</div>
+							<div class="box-body">
+								<form role="form" action="/board/register" method="post">
+									<div class="form-group">
+										<label for="inputTitle">Title</label>
+										<input type="text" name="title" 
+												class="form-control"
+												id="inputTitle" placeholder="게시물 제목">
+									</div>
+									
+									<div class="form-group">
+										<label for="inputContent">Content</label>
+										<textarea name="content" rows="10" 
+													class="form-control"
+													id="inputContent" 
+													th:text="'게시물 내용을 입력하세요..'">
+										</textarea>
+									</div>
+									
+									<div class="form-group">
+										<label for="inputWriter">Writer</label>
+										<input type="text" name="writer" 
+												class="form-control"
+												id="inputWriter" placeholder="작성자">
+									</div>
+										<button type="submit" class="btn btn-primary">
+											Submit
+										</button>
+								</form>
+							</div>
+						</div>
+					</section>
+				</div>
+			</div>
+			
+			<footer th:replace="fragments/footer :: footerFragment"></footer>
+		</div>
+		
+		<footer th:replace="fragments/footer :: scriptsFragment"></footer>
+	</body>
+</html>

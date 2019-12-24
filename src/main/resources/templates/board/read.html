@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="fragments/config :: configFragment"></head>
+	<body class="hold-transition skin-blue layout-top-nav">
+		<div class="wrapper">
+			<header th:replace="fragments/header :: naviFragment"></header>
+			<div class="content-wrapper">
+				<div class="container">
+					<section class="content-header">
+						<h1>My Diary <small>Top Navigation</small></h1>
+						<ol class="breadcrumb">
+							<li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+							<li><a href="#">Board</a></li>
+							<li class="active">Modify</li>
+						</ol>
+					</section>
+					<section class="content">
+						<div class="box">
+							<div class="box-header with-border">
+								<h3 class="box-title">Board Read Page</h3>
+							</div>
+							<div class="box-body" th:object="${board}">
+								<div class="form-group">
+									<label>Board #</label>
+									<input name="bno"
+											class="form-control"
+											th:value="*{bno}" readonly="readonly">
+								</div>
+								
+								<div class="form-group">
+									<label>Title</label>
+									<input name="title"
+											class="form-control"
+											th:value="*{title}" readonly="readonly">
+								</div>
+								
+								<div class="form-group">
+									<label>Content</label>
+									<textArea name="content" rows="3"
+											class="form-control"
+											th:text="*{content}" readonly="readonly">
+									</textArea>
+								</div>
+								
+								<div class="form-group">
+									<label>Writer</label>
+									<input name="writer"
+											class="form-control"
+											th:value="*{writer}" readonly="readonly">
+								</div>
+								
+								<div class="box-footer">
+									<button data-oper="modify" type="submit" class="btn btn-warning">
+										MODIFY
+									</button>
+									<button data-oper="list" type="submit" class="btn btn-primary">
+										LIST
+									</button>
+									
+									<ul class="btn btn-primary">
+									<li class="active"><a class="btn-primary" href="/test" role="button">Reply Page</a></li>
+									</ul>
+									
+								</div>
+								<form role="form" id="operForm" method="get">
+									<input type="hidden" name="bno" th:value="${board.bno}">
+									<input type="hidden" name="pageNum" th:value="${cri.pageNum}">
+									<input type="hidden" name="amount" th:value="${cri.amount}">
+									<input type="hidden" name="type"  th:value="${cri.type}">
+									<input type="hidden" name="keyword"	th:value="${cri.keyword}">
+								</form>
+							</div>
+						</div>
+					</section>
+					
+					<button class="btn btn-primary btn-xs pull-right" data-target="#layerpop" data-toggle="modal">New Reply</button><br/>
+						<div class="modal fade" id="layerpop" >
+  							<div class="modal-dialog">
+    							<div class="modal-content">
+								      <div class="modal-header">
+								        <h4 class="modal-title">Reply Modal Dialog</h4>
+								      </div>
+									      <div class="modal-body">
+										    	<div class="form-group">
+										     		<label for="inputContent">Content</label>
+													<input type="text" name="content" class="form-control" id="inputContent" placeholder="내용">
+												</div>
+												<div class="form-group">
+													<label for="inputWriter">Writer</label>
+													<input type="text" name="writer" 
+															class="form-control"
+															id="inputWriter" placeholder="작성자">
+												</div>
+													<button id="replyAddBtn" class="btn btn-primary">
+														Register
+													</button>
+													
+														<button type="button" class="btn btn-primary" id="replyDelBtn">Delete</button>
+												      </div>
+								      <div class="modal-footer">
+								        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+								      </div>
+								    </div>
+								  </div>
+								</div>
+								
+					<div class="modal fade" id="modifyModal" >
+  							<div class="modal-dialog">
+    							<div class="modal-content">
+								      <div class="modal-header">
+								        <h4 class="modal-title">Reply Modal Dialog</h4>
+								      </div>
+									      <div class="modal-body">
+										    	<div class="form-group">
+										     		<label for="inputContent">Content</label>
+													<input type="text" name="content" class="form-control" 
+													id="inputedContent" placeholder="수정 할 내용"readonly="readonly">
+													
+												</div>
+												<div class="form-group">
+													<label for="inputWriter">Writer</label>
+													<input type="text" name="writer" 
+															class="form-control"
+															id="inputWriter" 
+															placeholder="작성자" readonly="readonly">
+															
+												</div>
+												<div class="form-group">
+													<label for="timeValue">Timeline</label>
+													<input th:value="${#dates.format(board.regdate, 'yyyy-MM-dd HH:mm')}"/>
+												</div>
+												
+													<button id="replyAddBtn" class="btn btn-warning">
+														MODIFY
+													</button>
+													
+														<button type="button" class="btn btn-primary" id="replyDelBtn">Delete</button>
+												      </div>
+								      <div class="modal-footer">
+								        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+								      </div>
+								    </div>
+								  </div>
+								</div>
+								
+								
+								
+
+								<div class="row">
+									<div class="col-lg-12">
+										<ul class="timeline">
+											<li class="time-label">
+												<span class="bg-green">Replies List</span>
+											</li>
+											<li id="repliesDiv">
+											</li>
+										</ul>
+										<div class="text-center">
+											<ul id="pageination" class="pagination pagination-sm no-margin"></ul>
+										</div>
+									</div>
+								</div>
+				</div>
+			</div>
+			
+			<footer th:replace="fragments/footer :: footerFragment"></footer>
+		</div>
+		
+		<footer th:replace="fragments/footer :: scriptsFragment"></footer>
+		<script type="text/javascript" src="/js/reply.js?ver=1"></script>
+		
+		<script type="text/javascript">
+			$(document).ready(function(){
+				
+				var operForm = $("#operForm");
+				$("button[data-oper='modify']").on("click", function(e){
+					operForm.attr("action", "/board/modify").submit();
+				});
+				
+				$("button[data-oper='list']").on("click", function(e){
+					operForm.find("#bno").remove();
+					operForm.attr("action", "/board/list").submit();
+				});
+
+				var bnoValue = [[${board.bno}]];
+				var replyUL = $("#repliesDiv");
+				showList(1);
+				
+				function showList(page){
+					console.log("bno :" + bnoValue + ", page:" + page);
+					replyService.getList( {bno:bnoValue, page:page}, function(data){
+						var str = "";
+						if(data.list == null || data.list.length==0){
+							replyUL.html("");
+							return;
+						}
+						printData(data.list, replyUL, $("#template"));
+						printPaging(data.pageMaker, $(".pagination"));
+					});
+				}
+				
+				$(".pagination").on("click", "li a",function(e){
+					e.preventDefault();
+					var replyPage = $(this).attr("href");
+					showList(replyPage);
+				});
+
+				$("#replyAddBtn").on("click", function(){
+					
+					var replyer = $("#inputWriter").val();
+					var replycontent = $("#inputContent").val();
+					console.log("replyer :" + replyer + ", replycontent:" + replycontent);
+					replyService.add({replyer : replyer, reply : replycontent, bno : bnoValue}, function(data){
+							alert("등록되었습니다.");
+							$("#layerpop").modal("hide");
+							showList(1);
+					});
+				});
+			});
+		</script>
+
+		<script id="template" type="text/x-handlebars-template">
+			{{#each .}}
+				<li class="replyLi" data-rno={{rno}}>
+					<i class="fa fa-comments bg-blue"></i>
+					<div class="timeline-item">
+						<span class="time">
+							<i class="fa fa-clock-o"></i>{{prettifyDate replyDate}}
+						</span>
+						<h3 class="timeline-header"><strong>{{rno}}</strong> - {{replyer}}</h3>
+						<div class="timeline-body">{{reply}}</div>
+						<div class="timeline-footer">
+							<a class="btn btn-primary btn-xs"
+								data-toggle="modal" data-target="#modifyModal">Modify</a>
+							</div>
+						</div>
+					</li>
+				{{/each}}
+		</script>
+		<script>
+			Handlebars.registerHelper("prettifyDate", function(timeValue){
+				var dateObj = new Date(timeValue);
+				var year = dateObj.getFullYear();
+				var month = dateObj.getMonth() + 1;
+				var date = dateObj.getDate();
+				return year + "/" + month + "/" + date;	
+			});
+			
+			var printData = function(replyArr, target, templateObject){
+				var template = Handlebars.compile(templateObject.html());
+				var html = template(replyArr);
+				$(".replyLi").remove();
+				target.after(html);
+			}
+			
+			var printPaging = function(pageMaker, target){
+				var str = "";
+				if(pageMaker.prev){
+					str +="<li><a href='" + (pageMaker.startPage-1) + "'> << </a></li>";
+				}
+				for(var i=pageMaker.startPage,len=pageMaker.endPage; i<=len; i++){
+					var strClass= pageMaker.cri.pageNum == i ? "class=active" : "";
+					str += "<li " + strClass + "><a href='" + i + "'>" + i + "</a></li>";
+				}
+				if(pageMaker.next){
+					str +="<li><a href='" + (pageMaker.endPage+1) + "'> << </a></li>";
+				}
+				target.html(str);
+			};
+
+		</script>
+	</body>
+</html>
